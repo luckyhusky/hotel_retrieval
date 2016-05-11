@@ -3,14 +3,14 @@ import time
 import heapq
 from tokenization import tokenize
 
-def search(name, address, onlyOverall=True, tags=["cleanliness", "service", "value", "location", "sleep_quality", "rooms"]):
+def search(name, address, onlyOverall=True, tags=["cleanliness", "service", "value", "location", "sleep_quality", "rooms"],user_location="boston"):
     ''' This function is used for finding the conjunctive result by searching by "address" and "name".
 
     '''
     address_search_result = searchByAddress(address)
     name_search_result = searchByName(name)
     if len(address_search_result) == 0 and len(name_search_result) == 0:
-        return getDefaultData()
+        result = getDefaultData(user_location) #get default result according to location of the user
     elif len(address_search_result) == 0:#if no search resuls for address search return, final result is the result of name search
         result = name_search_result
     elif len(name_search_result) == 0:#if no search result for name search retuan, final result is the result of address search
@@ -157,26 +157,10 @@ def intersect_two(resultList1, resultList2):
             j = j + 1
     return result
 
-def getDefaultData():
-    hotels = shelve.open('hotels/static/data/hotels.db')
-    result = []
-    i = 30
-    j = 0
-    while i > 0:
-        if str(j) in hotels:
-            result.append((str(j), hotels[str(j)]))
-            i = i - 1
-        j = j + 1
-    hotels.close()
-    return result
+def getDefaultData(location="boston"):
+    '''This function is used for getting default data by retrieving data from the local area of the user.
 
-# start = time.time()
-# result = search('hilton', 'new york', False, ["service", "sleep_quality","cleanliness", "location"])
-# # result = search('continental','')
-# print "uses time:", time.time() - start
-# print "there are", len(result), "hits"
-# #print result
-# for item in result:
-#     #print item["name"]
-#     print item[0], item[1]["name"], item[1]["hotel_id"]#, item["address"]
-# #print search('', 'hotel', False, ["cleanliness"])'''
+    '''
+    result = []
+    temp = searchByAddress(location)
+    return temp
